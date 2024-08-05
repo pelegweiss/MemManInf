@@ -17,6 +17,15 @@
       <UniqueIdentifier>{8E41214B-6785-4CFE-B992-037D68949A14}</UniqueIdentifier>
       <Extensions>inf;inv;inx;mof;mc;</Extensions>
     </Filter>
+    <Filter Include="Hooks">
+      <UniqueIdentifier>{9fd08c19-c86d-4937-9ad2-44d2ee39dc56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Helpers">
+      <UniqueIdentifier>{05d70136-17cf-4741-ae98-cff12861e003}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="etw_hook">
+      <UniqueIdentifier>{38ec376b-ab0b-4622-b9d2-99572adcfc71}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\refs.hpp">
@@ -94,19 +103,28 @@
     <ClInclude Include="include\etwhook_utils.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\Helpers.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Structures.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\etwhook_main.cpp">
+    <ClCompile Include="src\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\etwhook_init.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\Helpers.cpp">
+      <Filter>Helpers</Filter>
     </ClCompile>
     <ClCompile Include="src\etwhook_manager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>etw_hook</Filter>
     </ClCompile>
     <ClCompile Include="src\etwhook_utils.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>etw_hook</Filter>
+    </ClCompile>
+    <ClCompile Include="src\etwhook_init.cpp">
+      <Filter>etw_hook</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
