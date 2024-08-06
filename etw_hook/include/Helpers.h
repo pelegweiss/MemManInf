@@ -18,7 +18,9 @@ namespace SSDT
 {
     PSERVICE_DESCRIPTOR_TABLE GetSSDT();
     PSERVICE_DESCRIPTOR_TABLE GetSSDTShadow(PSERVICE_DESCRIPTOR_TABLE ssdt);
-    ULONGLONG GetSSSDTFuncCurAddr64(PSERVICE_DESCRIPTOR_TABLE g_KeServiceDescriptorTableShadow, ULONG64 Index);
+    ULONGLONG GetSSDTShadowAddress(PSERVICE_DESCRIPTOR_TABLE g_KeServiceDescriptorTableShadow, ULONG64 Index);
+    ULONGLONG GetSSDTAddress(PSERVICE_DESCRIPTOR_TABLE g_KeServiceDescriptorTable, ULONG64 Index);
+
 
 }
 namespace Helpers

@@ -257,7 +257,7 @@ uintptr_t Helpers::getImageSectionByName(PVOID imageBase, const char* sectionNam
 	return {};
 }
 
-ULONGLONG SSDT::GetSSSDTFuncCurAddr64(PSERVICE_DESCRIPTOR_TABLE g_KeServiceDescriptorTableShadow, ULONG64 Index)
+ULONGLONG SSDT::GetSSDTShadowAddress(PSERVICE_DESCRIPTOR_TABLE g_KeServiceDescriptorTableShadow, ULONG64 Index)
 {
 	ULONGLONG	W32pServiceTable = 0, qwTemp = 0;
 	LONG 	dwTemp = 0;
@@ -267,6 +267,10 @@ ULONGLONG SSDT::GetSSSDTFuncCurAddr64(PSERVICE_DESCRIPTOR_TABLE g_KeServiceDescr
 	dwTemp = dwTemp >> 4;
 	qwTemp = W32pServiceTable + (LONG64)dwTemp;
 	return qwTemp;
+}
+ULONGLONG SSDT::GetSSDTAddress(PSERVICE_DESCRIPTOR_TABLE g_KeServiceDescriptorTable, ULONG64 Index)
+{
+	ULONGLONG buffer = (ULONGLONG)(g_KeServiceDescriptorTable->ServiceTableBase + (g_KeServiceDescriptorTable->ServiceTableBase[Index] >> 4));
 }
 
 NTSTATUS Helpers::getProcID(PUNICODE_STRING TargetProcessName, PHANDLE ProcessId) {
