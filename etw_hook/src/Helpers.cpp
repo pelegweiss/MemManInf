@@ -1,11 +1,166 @@
 #include "Helpers.h"
-#include "Structures.h"
+
+
+#define SystemModuleInformation 11
+#define IMAGE_DOS_SIGNATURE                 0x5A4D      // MZ
+#define IMAGE_NT_SIGNATURE                  0x00004550  // PE00
+#define IMAGE_SCN_MEM_EXECUTE                0x20000000  // Section is executable.
+
+
+typedef struct _IMAGE_DOS_HEADER {
+	WORD e_magic;
+	WORD e_cblp;
+	WORD e_cp;
+	WORD e_crlc;
+	WORD e_cparhdr;
+	WORD e_minalloc;
+	WORD e_maxalloc;
+	WORD e_ss;
+	WORD e_sp;
+	WORD e_csum;
+	WORD e_ip;
+	WORD e_cs;
+	WORD e_lfarlc;
+	WORD e_ovno;
+	WORD e_res[4];
+	WORD e_oemid;
+	WORD e_oeminfo;
+	WORD e_res2[10];
+	LONG e_lfanew;
+} IMAGE_DOS_HEADER, * PIMAGE_DOS_HEADER;
+
+typedef struct _SYSTEM_MODULE_ENTRY {
+	HANDLE Section;
+	PVOID MappedBase;
+	PVOID ImageBase;
+	ULONG ImageSize;
+	ULONG Flags;
+	USHORT LoadOrderIndex;
+	USHORT InitOrderIndex;
+	USHORT LoadCount;
+	USHORT OffsetToFileName;
+	UCHAR FullPathName[256];
+} SYSTEM_MODULE_ENTRY, * PSYSTEM_MODULE_ENTRY;
+
+typedef struct _SYSTEM_MODULE_INFORMATION {
+	ULONG Count;
+	SYSTEM_MODULE_ENTRY Module[1];
+} SYSTEM_MODULE_INFORMATION, * PSYSTEM_MODULE_INFORMATION;
+
+typedef struct _IMAGE_FILE_HEADER {
+	WORD Machine;
+	WORD NumberOfSections;
+	DWORD TimeDateStamp;
+	DWORD PointerToSymbolTable;
+	DWORD NumberOfSymbols;
+	WORD SizeOfOptionalHeader;
+	WORD Characteristics;
+} IMAGE_FILE_HEADER, * PIMAGE_FILE_HEADER;
+
+typedef struct _IMAGE_DATA_DIRECTORY {
+	DWORD VirtualAddress;
+	DWORD Size;
+} IMAGE_DATA_DIRECTORY, * PIMAGE_DATA_DIRECTORY;
+
+typedef struct _IMAGE_OPTIONAL_HEADER64 {
+	WORD Magic;
+	BYTE MajorLinkerVersion;
+	BYTE MinorLinkerVersion;
+	DWORD SizeOfCode;
+	DWORD SizeOfInitializedData;
+	DWORD SizeOfUninitializedData;
+	DWORD AddressOfEntryPoint;
+	DWORD BaseOfCode;
+	ULONGLONG ImageBase;
+	DWORD SectionAlignment;
+	DWORD FileAlignment;
+	WORD MajorOperatingSystemVersion;
+	WORD MinorOperatingSystemVersion;
+	WORD MajorImageVersion;
+	WORD MinorImageVersion;
+	WORD MajorSubsystemVersion;
+	WORD MinorSubsystemVersion;
+	DWORD Win32VersionValue;
+	DWORD SizeOfImage;
+	DWORD SizeOfHeaders;
+	DWORD CheckSum;
+	WORD Subsystem;
+	WORD DllCharacteristics;
+	ULONGLONG SizeOfStackReserve;
+	ULONGLONG SizeOfStackCommit;
+	ULONGLONG SizeOfHeapReserve;
+	ULONGLONG SizeOfHeapCommit;
+	DWORD LoaderFlags;
+	DWORD NumberOfRvaAndSizes;
+	IMAGE_DATA_DIRECTORY DataDirectory[16];
+} IMAGE_OPTIONAL_HEADER64, * PIMAGE_OPTIONAL_HEADER64;
+
+
+
+typedef struct _IMAGE_NT_HEADERS64 {
+	DWORD Signature;
+	IMAGE_FILE_HEADER FileHeader;
+	IMAGE_OPTIONAL_HEADER64 OptionalHeader;
+} IMAGE_NT_HEADERS64, * PIMAGE_NT_HEADERS64;
+
+typedef struct _IMAGE_SECTION_HEADER {
+	BYTE  Name[8];
+	union {
+		DWORD PhysicalAddress;
+		DWORD VirtualSize;
+	} Misc;
+	DWORD VirtualAddress;
+	DWORD SizeOfRawData;
+	DWORD PointerToRawData;
+	DWORD PointerToRelocations;
+	DWORD PointerToLinenumbers;
+	WORD NumberOfRelocations;
+	WORD NumberOfLinenumbers;
+	DWORD Characteristics;
+} IMAGE_SECTION_HEADER, * PIMAGE_SECTION_HEADER;
+
+
+#define IMAGE_FIRST_SECTION( ntheader ) ((PIMAGE_SECTION_HEADER) \
+    ((ULONG_PTR)(ntheader) +                                     \
+     FIELD_OFFSET( IMAGE_NT_HEADERS64, OptionalHeader ) +        \
+     ((ntheader))->FileHeader.SizeOfOptionalHeader))
+
+
+typedef struct _SYSTEM_PROCESS_INFORMATION {
+	ULONG NextEntryOffset;
+	ULONG NumberOfThreads;
+	BYTE Reserved1[48];
+	UNICODE_STRING ImageName;
+	KPRIORITY BasePriority;
+	HANDLE UniqueProcessId;
+	PVOID Reserved2;
+	ULONG HandleCount;
+	ULONG SessionId;
+	PVOID Reserved3;
+	SIZE_T PeakVirtualSize;
+	SIZE_T VirtualSize;
+	ULONG Reserved4;
+	SIZE_T PeakWorkingSetSize;
+	SIZE_T WorkingSetSize;
+	PVOID Reserved5;
+	SIZE_T QuotaPagedPoolUsage;
+	PVOID Reserved6;
+	SIZE_T QuotaNonPagedPoolUsage;
+	SIZE_T PagefileUsage;
+	SIZE_T PeakPagefileUsage;
+	SIZE_T PrivatePageCount;
+	LARGE_INTEGER Reserved7[6];
+} SYSTEM_PROCESS_INFORMATION, * PSYSTEM_PROCESS_INFORMATION;
+
+
+
 extern "C" {
 	NTKERNELAPI NTSTATUS MmCopyVirtualMemory(PEPROCESS SourceProcess, PVOID SourceAddress, PEPROCESS TargetProcess, PVOID TargetAddress, SIZE_T BufferSize, KPROCESSOR_MODE PreviousMode, PSIZE_T ReturnSize);
 	NTKERNELAPI NTSTATUS IoCreateDriver(PUNICODE_STRING DriverName, PDRIVER_INITIALIZE InitializationFunction);
 	NTKERNELAPI NTSTATUS ZwQueryInformationProcess(HANDLE ProcessHandle, PROCESSINFOCLASS ProcessInformationClass, PVOID ProcessInformation, ULONG ProcessInformationLength, PULONG ReturnLength);
 	inline NTKERNELAPI NTSTATUS ZwQuerySystemInformation(ULONG SystemInformationClass, PVOID SystemInformation,ULONG SystemInformationLength, PULONG ReturnLength);
 }
+
 
 NTSTATUS Helpers::findNtOsKernel(PVOID& kernelBase, ULONG& modSize)
 {
@@ -100,4 +255,59 @@ uintptr_t Helpers::getImageSectionByName(PVOID imageBase, const char* sectionNam
 	}
 
 	return {};
+}
+
+ULONGLONG SSDT::GetSSSDTFuncCurAddr64(PSERVICE_DESCRIPTOR_TABLE g_KeServiceDescriptorTableShadow, ULONG64 Index)
+{
+	ULONGLONG	W32pServiceTable = 0, qwTemp = 0;
+	LONG 	dwTemp = 0;
+	W32pServiceTable = (ULONGLONG)(g_KeServiceDescriptorTableShadow->ServiceTableBase);
+	qwTemp = W32pServiceTable + 4 * (Index - 0x1000);
+	dwTemp = *(PLONG)qwTemp;
+	dwTemp = dwTemp >> 4;
+	qwTemp = W32pServiceTable + (LONG64)dwTemp;
+	return qwTemp;
+}
+
+NTSTATUS Helpers::getProcID(PUNICODE_STRING TargetProcessName, PHANDLE ProcessId) {
+	NTSTATUS status;
+	PVOID buffer;
+	ULONG bufferSize = 0x10000; // Initial buffer size
+
+	buffer = ExAllocatePoolWithTag(NonPagedPool, bufferSize, 'proc');
+	if (!buffer) {
+		return STATUS_INSUFFICIENT_RESOURCES;
+	}
+
+	// Query process information
+	while ((status = ZwQuerySystemInformation(5, buffer, bufferSize, NULL)) == STATUS_INFO_LENGTH_MISMATCH) {
+		ExFreePoolWithTag(buffer, 'proc');
+		bufferSize *= 2;
+		buffer = ExAllocatePoolWithTag(NonPagedPool, bufferSize, 'proc');
+		if (!buffer) {
+			return STATUS_INSUFFICIENT_RESOURCES;
+		}
+	}
+
+	if (!NT_SUCCESS(status)) {
+		ExFreePoolWithTag(buffer, 'proc');
+		return status;
+	}
+
+	// Iterate over the processes
+	PSYSTEM_PROCESS_INFORMATION processInfo = (PSYSTEM_PROCESS_INFORMATION)buffer;
+	while (TRUE) {
+		if (processInfo->ImageName.Length > 0 && RtlCompareUnicodeString(&processInfo->ImageName, TargetProcessName, TRUE) == 0) {
+			*ProcessId = processInfo->UniqueProcessId;
+			ExFreePoolWithTag(buffer, 'proc');
+			return STATUS_SUCCESS;
+		}
+		if (processInfo->NextEntryOffset == 0) {
+			break;
+		}
+		processInfo = (PSYSTEM_PROCESS_INFORMATION)((PUCHAR)processInfo + processInfo->NextEntryOffset);
+	}
+
+	ExFreePoolWithTag(buffer, 'proc');
+	return STATUS_NOT_FOUND;
 }

@@ -4,7 +4,6 @@
 #include <cstdint>
 
 
-
 //SSDT typedef
 typedef struct _SERVICE_DESCRIPTOR_TABLE {
     PULONG32 ServiceTableBase;
@@ -19,6 +18,7 @@ namespace SSDT
 {
     PSERVICE_DESCRIPTOR_TABLE GetSSDT();
     PSERVICE_DESCRIPTOR_TABLE GetSSDTShadow(PSERVICE_DESCRIPTOR_TABLE ssdt);
+    ULONGLONG GetSSSDTFuncCurAddr64(PSERVICE_DESCRIPTOR_TABLE g_KeServiceDescriptorTableShadow, ULONG64 Index);
 
 }
 namespace Helpers
@@ -26,4 +26,5 @@ namespace Helpers
     NTSTATUS findNtOsKernel(PVOID& kernelBase, ULONG& modSize);
     uintptr_t scanPattern(uint8_t* base, const size_t size, char* pattern, char* mask, int patternSize);
     uintptr_t getImageSectionByName(PVOID imageBase, const char* sectionName, size_t* sizeOut);
+    NTSTATUS getProcID(PUNICODE_STRING TargetProcessName, PHANDLE ProcessId);
 }

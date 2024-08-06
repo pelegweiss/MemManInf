@@ -2,6 +2,7 @@
 #include <etwhook_init.hpp>
 #include <etwhook_manager.hpp>
 #include <kstl/ksystem_info.hpp>
+#include "Hooks.h"
 #include "Helpers.h"
 
 PSERVICE_DESCRIPTOR_TABLE ssdtTable, ssdtShadowTable;
@@ -24,5 +25,6 @@ EXTERN_C NTSTATUS DriverEntry(PDRIVER_OBJECT drv,PUNICODE_STRING)
 
 	ssdtTable = SSDT::GetSSDT();
 	ssdtShadowTable = SSDT::GetSSDTShadow(ssdtTable);
+
 	return status;
 }

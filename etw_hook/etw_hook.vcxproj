@@ -212,6 +212,7 @@
     <ClInclude Include="include\etwhook_manager.hpp" />
     <ClInclude Include="include\etwhook_utils.hpp" />
     <ClInclude Include="include\Helpers.h" />
+    <ClInclude Include="include\Hooks.h" />
     <ClInclude Include="include\kstl\karray.hpp" />
     <ClInclude Include="include\kstl\kautolock.hpp" />
     <ClInclude Include="include\kstl\kavl.hpp" />
@@ -233,10 +234,10 @@
     <ClInclude Include="include\kstl\ksystem_info.hpp" />
     <ClInclude Include="include\kstl\kvector.hpp" />
     <ClInclude Include="include\refs.hpp" />
-    <ClInclude Include="include\Structures.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\etwhook_init.cpp" />
+    <ClCompile Include="src\Hooks.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\etwhook_manager.cpp" />
     <ClCompile Include="src\etwhook_utils.cpp" />

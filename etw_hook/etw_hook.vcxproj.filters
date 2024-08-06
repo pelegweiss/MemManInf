@@ -106,8 +106,8 @@
     <ClInclude Include="include\Helpers.h">
       <Filter>Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="include\Structures.h">
-      <Filter>Helpers</Filter>
+    <ClInclude Include="include\Hooks.h">
+      <Filter>Hooks</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -125,6 +125,9 @@
     </ClCompile>
     <ClCompile Include="src\etwhook_init.cpp">
       <Filter>etw_hook</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hooks.cpp">
+      <Filter>Hooks</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
