@@ -20,7 +20,7 @@ public:
 	//单例
 	static EtwHookManager* get_instance();
 
-	NTSTATUS init();
+	NTSTATUS init(PDRIVER_OBJECT DriverObject, PLOAD_IMAGE_NOTIFY_ROUTINE imageRoutine);
 
 	NTSTATUS destory();
 
@@ -56,5 +56,7 @@ private:
 	ULONG __nt_size;
 	ULONG_PTR __KiSystemServiceRepeat;
 
+	PDRIVER_OBJECT DriverObject; // Added
+	PLOAD_IMAGE_NOTIFY_ROUTINE imageRoutine; // Added
 
 };

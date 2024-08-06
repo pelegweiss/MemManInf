@@ -3,7 +3,7 @@
 #include <windef.h>
 
 
-
+inline HANDLE maplestoryPID, blackCallPID, blackCipherPID, MemManPID, CEPID;
 
 void imageLoadCallBack(PUNICODE_STRING fullImageName, HANDLE processID, PIMAGE_INFO imageInfo);
 NTSTATUS HookedNtQuerySystemInformationEx(ULONG SystemInformationClass, PVOID InputBuffer, ULONG InputBufferLength, PVOID SystemInformation, ULONG SystemInformationLength, PULONG ReturnLength);

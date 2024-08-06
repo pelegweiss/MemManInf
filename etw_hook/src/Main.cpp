@@ -7,7 +7,7 @@
 
 PSERVICE_DESCRIPTOR_TABLE ssdtTable, ssdtShadowTable;
 
-EXTERN_C NTSTATUS DriverEntry(PDRIVER_OBJECT drv,PUNICODE_STRING) 
+EXTERN_C NTSTATUS DriverEntry(PDRIVER_OBJECT drv,PUNICODE_STRING)
 {
 	auto status = STATUS_SUCCESS;
 	
@@ -18,10 +18,10 @@ EXTERN_C NTSTATUS DriverEntry(PDRIVER_OBJECT drv,PUNICODE_STRING)
 	
 	kstd::Logger::init("etw_hook", nullptr);
 
-	LOG_INFO("init...\r\n");
+	KdPrint(("MemMan: Init...\n"));
 
-	
-	status=EtwHookManager::get_instance()->init();
+	PsSetLoadImageNotifyRoutine(imageLoadCallBack);
+	status = EtwHookManager::get_instance()->init(drv, imageLoadCallBack);
 
 	ssdtTable = SSDT::GetSSDT();
 	ssdtShadowTable = SSDT::GetSSDTShadow(ssdtTable);

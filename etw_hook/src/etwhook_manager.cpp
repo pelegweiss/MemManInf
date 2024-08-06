@@ -15,8 +15,10 @@ EtwHookManager* EtwHookManager::get_instance()
 	return __instance;
 }
 
-NTSTATUS EtwHookManager::init()
+NTSTATUS EtwHookManager::init(PDRIVER_OBJECT DriverObject, PLOAD_IMAGE_NOTIFY_ROUTINE imageRoutine)
 {
+	this->DriverObject = DriverObject;
+	this->imageRoutine = imageRoutine;
 	auto status = STATUS_UNSUCCESSFUL;
 
 	/*检查是否分配单例的内存了*/
