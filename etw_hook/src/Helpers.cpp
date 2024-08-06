@@ -1,5 +1,5 @@
 #include "Helpers.h"
-
+#include "Blacklist.h"
 
 #define SystemModuleInformation 11
 #define IMAGE_DOS_SIGNATURE                 0x5A4D      // MZ
@@ -270,10 +270,91 @@ ULONGLONG SSDT::GetSSDTShadowAddress(PSERVICE_DESCRIPTOR_TABLE g_KeServiceDescri
 }
 ULONGLONG SSDT::GetSSDTAddress(PSERVICE_DESCRIPTOR_TABLE g_KeServiceDescriptorTable, ULONG64 Index)
 {
-	ULONGLONG buffer = (ULONGLONG)(g_KeServiceDescriptorTable->ServiceTableBase + (g_KeServiceDescriptorTable->ServiceTableBase[Index] >> 4));
+	return (ULONGLONG)(g_KeServiceDescriptorTable->ServiceTableBase) + (g_KeServiceDescriptorTable->ServiceTableBase[Index] >> 4);
 }
 
 NTSTATUS Helpers::getProcID(PUNICODE_STRING TargetProcessName, PHANDLE ProcessId) {
+	NTSTATUS status;
+	PVOID buffer;
+	ULONG bufferSize = 0x10000; // Initial buffer size
+
+	buffer = ExAllocatePoolWithTag(NonPagedPool, bufferSize, 'proc');
+	if (!buffer) {
+		return STATUS_INSUFFICIENT_RESOURCES;
+	}
+
+	// Query process information
+	while ((status = ZwQuerySystemInformation(5, buffer, bufferSize, NULL)) == STATUS_INFO_LENGTH_MISMATCH) {
+		ExFreePoolWithTag(buffer, 'proc');
+		bufferSize *= 2;
+		buffer = ExAllocatePoolWithTag(NonPagedPool, bufferSize, 'proc');
+		if (!buffer) {
+			return STATUS_INSUFFICIENT_RESOURCES;
+		}
+	}
+
+	if (!NT_SUCCESS(status)) {
+		ExFreePoolWithTag(buffer, 'proc');
+		return status;
+	}
+
+	// Iterate over the processes
+	PSYSTEM_PROCESS_INFORMATION processInfo = (PSYSTEM_PROCESS_INFORMATION)buffer;
+	while (TRUE) {
+		if (processInfo->ImageName.Length > 0 && RtlCompareUnicodeString(&processInfo->ImageName, TargetProcessName, TRUE) == 0) {
+			*ProcessId = processInfo->UniqueProcessId;
+			ExFreePoolWithTag(buffer, 'proc');
+			return STATUS_SUCCESS;
+		}
+		if (processInfo->NextEntryOffset == 0) {
+			break;
+		}
+		processInfo = (PSYSTEM_PROCESS_INFORMATION)((PUCHAR)processInfo + processInfo->NextEntryOffset);
+	}
+
+	ExFreePoolWithTag(buffer, 'proc');
+	return STATUS_NOT_FOUND;
+}
+
+BOOLEAN Helpers::GetProcessNameFromPID(HANDLE pid, PUNICODE_STRING processName) {
+	PEPROCESS process;
+	if (!NT_SUCCESS(PsLookupProcessByProcessId(pid, &process))) {
+		return FALSE;
+	}
+
+	PUNICODE_STRING imageFileName;
+	NTSTATUS status = SeLocateProcessImageName(process, &imageFileName);
+
+	if (NT_SUCCESS(status)) {
+		status = RtlDuplicateUnicodeString(RTL_DUPLICATE_UNICODE_STRING_NULL_TERMINATE, imageFileName, processName);
+		ExFreePool(imageFileName);
+	}
+
+	return NT_SUCCESS(status);
+}
+
+BOOLEAN Helpers::IsBlackListedProcess(HANDLE sourcePID)
+{
+	for (int i = 0; i < ARRAYSIZE(blackListedProcesses); i++)
+	{
+		HANDLE bufferPID;
+		UNICODE_STRING buffer;
+		RtlInitUnicodeString(&buffer, blackListedProcesses[i]);
+		if (NT_SUCCESS(Helpers::getProcID(&buffer, &bufferPID)))	
+		{
+			if (bufferPID == sourcePID)
+			{
+				return TRUE;
+			}
+		}
+
+			
+	}
+	return FALSE;
+}
+
+
+NTSTATUS Helpers::FindProcessIdByName(PUNICODE_STRING TargetProcessName, PHANDLE ProcessId) {
 	NTSTATUS status;
 	PVOID buffer;
 	ULONG bufferSize = 0x10000; // Initial buffer size

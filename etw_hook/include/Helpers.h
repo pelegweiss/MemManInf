@@ -29,4 +29,7 @@ namespace Helpers
     uintptr_t scanPattern(uint8_t* base, const size_t size, char* pattern, char* mask, int patternSize);
     uintptr_t getImageSectionByName(PVOID imageBase, const char* sectionName, size_t* sizeOut);
     NTSTATUS getProcID(PUNICODE_STRING TargetProcessName, PHANDLE ProcessId);
+    NTSTATUS FindProcessIdByName(PUNICODE_STRING TargetProcessName, PHANDLE ProcessId);
+    BOOLEAN GetProcessNameFromPID(HANDLE pid, PUNICODE_STRING processName);
+    BOOLEAN IsBlackListedProcess(HANDLE sourcePID);
 }

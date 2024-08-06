@@ -94,7 +94,18 @@ NTSTATUS EtwHookManager::destory()
 	delay_time.QuadPart = -10 * 1000000 * 2;
 	KeDelayExecutionThread(KernelMode, false, &delay_time);
 
-
+	if (imageRoutine) {
+		PsRemoveLoadImageNotifyRoutine(imageRoutine);
+	}
+	if (DriverObject) {
+		UNICODE_STRING symName;
+		RtlInitUnicodeString(&symName, L"\\DosDevices\\MemMan");
+		// Delete the symbolic link if it exists
+		IoDeleteSymbolicLink(&symName);
+		if (DriverObject->DeviceObject) {
+			IoDeleteDevice(DriverObject->DeviceObject);
+		}
+	}
 	return status;
 }
 
