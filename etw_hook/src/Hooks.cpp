@@ -48,7 +48,7 @@ NTSTATUS Hooks::HookedNtOpenProcess(PHANDLE ProcessHandle, ACCESS_MASK DesiredAc
                 KdPrint(("Failed to get process name for PID: %p from HookedNtQueryUserWindow\n", sourceProcessId));
                 return status;
             }
-            KdPrint(("Prevented handle creation from process %wZ to process %wZ\n", sourceName, targetName));
+            KdPrint(("MemMan: Prevented handle creation from process %wZ to process %wZ\n", sourceName, targetName));
             return STATUS_ACCESS_DENIED;
         }
     }
