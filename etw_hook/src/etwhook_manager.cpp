@@ -15,10 +15,9 @@ EtwHookManager* EtwHookManager::get_instance()
 	return __instance;
 }
 
-NTSTATUS EtwHookManager::init(PDRIVER_OBJECT DriverObject, PLOAD_IMAGE_NOTIFY_ROUTINE imageRoutine)
+NTSTATUS EtwHookManager::init(PDRIVER_OBJECT DriverObject)
 {
 	this->DriverObject = DriverObject;
-	this->imageRoutine = imageRoutine;
 	auto status = STATUS_UNSUCCESSFUL;
 
 	/*检查是否分配单例的内存了*/
@@ -94,9 +93,7 @@ NTSTATUS EtwHookManager::destory()
 	delay_time.QuadPart = -10 * 1000000 * 2;
 	KeDelayExecutionThread(KernelMode, false, &delay_time);
 
-	if (imageRoutine) {
-		PsRemoveLoadImageNotifyRoutine(imageRoutine);
-	}
+	/*
 	if (DriverObject) {
 		UNICODE_STRING symName;
 		RtlInitUnicodeString(&symName, L"\\DosDevices\\MemMan");
@@ -106,6 +103,7 @@ NTSTATUS EtwHookManager::destory()
 			IoDeleteDevice(DriverObject->DeviceObject);
 		}
 	}
+	*/
 	return status;
 }
 

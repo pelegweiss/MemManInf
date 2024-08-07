@@ -22,8 +22,7 @@ EXTERN_C NTSTATUS DriverEntry(PDRIVER_OBJECT drv,PUNICODE_STRING)
 
 	KdPrint(("MemMan: Init...\n"));
 
-	PsSetLoadImageNotifyRoutine(imageLoadCallBack);
-	status = EtwHookManager::get_instance()->init(drv, imageLoadCallBack);
+	status = EtwHookManager::get_instance()->init(drv);
 
 	ssdtTable = SSDT::GetSSDT();
 	ssdtShadowTable = SSDT::GetSSDTShadow(ssdtTable);

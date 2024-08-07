@@ -207,7 +207,7 @@
     <FilesToPackage Include="$(TargetPath)" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Blacklist.h" />
+    <ClInclude Include="include\lists.h" />
     <ClInclude Include="include\etwhook_base.hpp" />
     <ClInclude Include="include\etwhook_init.hpp" />
     <ClInclude Include="include\etwhook_manager.hpp" />

@@ -32,4 +32,6 @@ namespace Helpers
     NTSTATUS FindProcessIdByName(PUNICODE_STRING TargetProcessName, PHANDLE ProcessId);
     BOOLEAN GetProcessNameFromPID(HANDLE pid, PUNICODE_STRING processName);
     BOOLEAN IsBlackListedProcess(HANDLE sourcePID);
+    BOOLEAN IsTargetProcess(HANDLE sourcePID);
+
 }

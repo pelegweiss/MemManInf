@@ -5,3 +5,10 @@ static wchar_t* blackListedProcesses[] =
 	L"ProcessHacker.exe",
 	L"MemManUM.exe"
 };
+
+static wchar_t* targets[] =
+{
+	L"BlackCipher64.aes",
+	L"BlackCall64.aes",
+	L"MapleStory.exe"
+};

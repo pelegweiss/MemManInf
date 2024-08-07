@@ -1,5 +1,5 @@
 #include "Helpers.h"
-#include "Blacklist.h"
+#include "lists.h"
 
 #define SystemModuleInformation 11
 #define IMAGE_DOS_SIGNATURE                 0x5A4D      // MZ
@@ -349,6 +349,26 @@ BOOLEAN Helpers::IsBlackListedProcess(HANDLE sourcePID)
 		}
 
 			
+	}
+	return FALSE;
+}
+
+BOOLEAN Helpers::IsTargetProcess(HANDLE sourcePID)
+{
+	for (int i = 0; i < ARRAYSIZE(targets); i++)
+	{
+		HANDLE bufferPID;
+		UNICODE_STRING buffer;
+		RtlInitUnicodeString(&buffer, targets[i]);
+		if (NT_SUCCESS(Helpers::getProcID(&buffer, &bufferPID)))
+		{
+			if (bufferPID == sourcePID)
+			{
+				return TRUE;
+			}
+		}
+
+
 	}
 	return FALSE;
 }

@@ -1,31 +1,12 @@
 #include "Hooks.h"
 #include "Helpers.h"
-void imageLoadCallBack(PUNICODE_STRING fullImageName, HANDLE processID, PIMAGE_INFO imageInfo)
-{
-    if (wcsstr(fullImageName->Buffer, L"Nexon\\Library\\maplestory\\appdata\\MapleStory.exe"))
-    {
-        KdPrint(("MemMan: Maplestory module has been loaded with the processID: %d\n", processID));
-        maplestoryPID = processID;
-    }
-    else if (wcsstr(fullImageName->Buffer, L"\\Nexon\\Library\\maplestory\\appdata\\BlackCipher\\BlackCipher64.aes"))
-    {
-        KdPrint(("MemMan: BlackCipher module has been loaded with the processID: %d\n", processID));
-        blackCipherPID = processID;
-
-    }
-    else if (wcsstr(fullImageName->Buffer, L"\\Nexon\\Library\\maplestory\\appdata\\BlackCipher\\BlackCall64.aes"))
-    {
-        KdPrint(("MemMan: BlackCall module has been loaded with the processID: %d\n", processID));
-        blackCallPID = processID;
-    }
-}
 
 NTSTATUS Hooks::HookedNtOpenProcess(PHANDLE ProcessHandle, ACCESS_MASK DesiredAccess, POBJECT_ATTRIBUTES ObjectAttributes, PCLIENT_ID ClientId OPTIONAL)
 {
     NTSTATUS status = OriginalNtOpenProcess(ProcessHandle, DesiredAccess, ObjectAttributes, ClientId);
     PEPROCESS sourceProcess = PsGetCurrentProcess();
     HANDLE sourceProcessId = PsGetProcessId(sourceProcess);
-    if (sourceProcessId != blackCipherPID && sourceProcessId != blackCallPID && sourceProcessId != maplestoryPID)
+    if(!Helpers::IsTargetProcess(sourceProcessId))
         return status;
 
     HANDLE targetProcessId = NULL;
@@ -166,7 +147,7 @@ NTSTATUS Hooks::HookedNtQuerySystemInformation(ULONG SystemInformationClass, PVO
     if (!NT_SUCCESS(status) || SystemInformation == NULL) {
         return status;
     }
-    if (sourceProcessId != blackCipherPID && sourceProcessId != blackCallPID && sourceProcessId != maplestoryPID)
+    if (!Helpers::IsTargetProcess(sourceProcessId))
         return status;
     switch (SystemInformationClass)
     {

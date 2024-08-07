@@ -3,9 +3,6 @@
 #include <windef.h>
 
 
-inline HANDLE maplestoryPID, blackCallPID, blackCipherPID, MemManPID, CEPID;
-
-void imageLoadCallBack(PUNICODE_STRING fullImageName, HANDLE processID, PIMAGE_INFO imageInfo);
 
 namespace Hooks
 {
