@@ -1,7 +1,7 @@
 #include "Hooks.h"
 #include "Helpers.h"
 
-NTSTATUS Hooks::HookedNtOpenProcess(PHANDLE ProcessHandle, ACCESS_MASK DesiredAccess, POBJECT_ATTRIBUTES ObjectAttributes, PCLIENT_ID ClientId OPTIONAL)
+NTSTATUS Hooks::HookedNtOpenProcess(PHANDLE ProcessHandle, ACCESS_MASK DesiredAccess, POBJECT_ATTRIBUTES ObjectAttributes, PCLIENT_ID ClientId)
 {
     NTSTATUS status = OriginalNtOpenProcess(ProcessHandle, DesiredAccess, ObjectAttributes, ClientId);
     PEPROCESS sourceProcess = PsGetCurrentProcess();
