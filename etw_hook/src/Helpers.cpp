@@ -6,6 +6,11 @@
 #define IMAGE_NT_SIGNATURE                  0x00004550  // PE00
 #define IMAGE_SCN_MEM_EXECUTE                0x20000000  // Section is executable.
 
+extern "C" void RtlGetNtVersionNumbers(
+	PULONG MajorVersion,
+	PULONG MinorVersion,
+	PULONG BuildNumber
+);
 
 typedef struct _IMAGE_DOS_HEADER {
 	WORD e_magic;
@@ -415,4 +420,56 @@ NTSTATUS Helpers::FindProcessIdByName(PUNICODE_STRING TargetProcessName, PHANDLE
 
 	ExFreePoolWithTag(buffer, 'proc');
 	return STATUS_NOT_FOUND;
+}
+
+NTSTATUS Helpers::GetWindowsVersion(OSVERSIONINFOEXW* pVersionInfo) {
+	pVersionInfo->dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXW);
+	return RtlGetVersion((PRTL_OSVERSIONINFOW)pVersionInfo);
+}
+int SSDT::getSSDTIndex(int id)
+{
+	OSVERSIONINFOEXW pVersion;
+	Helpers::GetWindowsVersion(&pVersion);
+	KdPrint(("MemMan: %d %d %d\n", pVersion.dwMajorVersion, pVersion.dwMinorVersion, pVersion.dwBuildNumber));
+
+	if (pVersion.dwBuildNumber < 22000)
+	{
+		switch (id)
+		{
+		case NtOpenProcessID:
+			return 0x26;
+		case NtQuerySystemInformationID:
+			return 0x36;
+		case NtUserBuildHwndListID:
+			return 0x101c;
+		case NtUserQueryWindowID:
+			return 0x1010;
+		case NtUserFindWindowExID:
+			return 0x106c;
+		case NtUserGetForegroundWindowID:
+			return 0x103c;
+
+		}
+	}
+	else
+	{
+		switch (id)
+		{
+		case NtOpenProcessID:
+			return 0x26;
+		case NtQuerySystemInformationID:
+			return 0x36;
+		case NtUserBuildHwndListID:
+			return 0x101A;
+		case NtUserQueryWindowID:
+			return 0x100e;
+		case NtUserFindWindowExID:
+			return 0x1067;
+		case NtUserGetForegroundWindowID:
+			return 0x1037;
+
+		}
+	}
+
+
 }

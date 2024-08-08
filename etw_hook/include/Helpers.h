@@ -20,6 +20,8 @@ namespace SSDT
     PSERVICE_DESCRIPTOR_TABLE GetSSDTShadow(PSERVICE_DESCRIPTOR_TABLE ssdt);
     ULONGLONG GetSSDTShadowAddress(PSERVICE_DESCRIPTOR_TABLE g_KeServiceDescriptorTableShadow, ULONG64 Index);
     ULONGLONG GetSSDTAddress(PSERVICE_DESCRIPTOR_TABLE g_KeServiceDescriptorTable, ULONG64 Index);
+	int getSSDTIndex(int id);
+
 
 
 }
@@ -33,5 +35,18 @@ namespace Helpers
     BOOLEAN GetProcessNameFromPID(HANDLE pid, PUNICODE_STRING processName);
     BOOLEAN IsBlackListedProcess(HANDLE sourcePID);
     BOOLEAN IsTargetProcess(HANDLE sourcePID);
+	NTSTATUS GetWindowsVersion(OSVERSIONINFOEXW* pVersionInfo);
 
 }
+
+
+
+enum SysCalls
+{
+	NtOpenProcessID,
+	NtQuerySystemInformationID,
+	NtUserBuildHwndListID,
+	NtUserQueryWindowID,
+	NtUserFindWindowExID,
+	NtUserGetForegroundWindowID
+};

@@ -15,9 +15,8 @@ EtwHookManager* EtwHookManager::get_instance()
 	return __instance;
 }
 
-NTSTATUS EtwHookManager::init(PDRIVER_OBJECT DriverObject)
+NTSTATUS EtwHookManager::init()
 {
-	this->DriverObject = DriverObject;
 	auto status = STATUS_UNSUCCESSFUL;
 
 	/*检查是否分配单例的内存了*/
@@ -93,17 +92,6 @@ NTSTATUS EtwHookManager::destory()
 	delay_time.QuadPart = -10 * 1000000 * 2;
 	KeDelayExecutionThread(KernelMode, false, &delay_time);
 
-	/*
-	if (DriverObject) {
-		UNICODE_STRING symName;
-		RtlInitUnicodeString(&symName, L"\\DosDevices\\MemMan");
-		// Delete the symbolic link if it exists
-		IoDeleteSymbolicLink(&symName);
-		if (DriverObject->DeviceObject) {
-			IoDeleteDevice(DriverObject->DeviceObject);
-		}
-	}
-	*/
 	return status;
 }
 
