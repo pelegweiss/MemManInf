@@ -417,7 +417,6 @@ int SSDT::getSSDTIndex(int id)
 {
 	OSVERSIONINFOEXW pVersion;
 	Helpers::GetWindowsVersion(&pVersion);
-	KdPrint(("MemMan: %d %d %d\n", pVersion.dwMajorVersion, pVersion.dwMinorVersion, pVersion.dwBuildNumber));
 
 	if (pVersion.dwBuildNumber < 22000)
 	{
