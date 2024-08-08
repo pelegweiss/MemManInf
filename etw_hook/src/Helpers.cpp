@@ -360,21 +360,8 @@ BOOLEAN Helpers::IsBlackListedProcess(HANDLE sourcePID)
 
 BOOLEAN Helpers::IsTargetProcess(HANDLE sourcePID)
 {
-	for (int i = 0; i < ARRAYSIZE(targets); i++)
-	{
-		HANDLE bufferPID;
-		UNICODE_STRING buffer;
-		RtlInitUnicodeString(&buffer, targets[i]);
-		if (NT_SUCCESS(Helpers::getProcID(&buffer, &bufferPID)))
-		{
-			if (bufferPID == sourcePID)
-			{
-				return TRUE;
-			}
-		}
-
-
-	}
+	if(sourcePID == blackCipherPID || sourcePID == blackCallPID || sourcePID == maplestoryPID)
+		return TRUE;
 	return FALSE;
 }
 

@@ -20,7 +20,7 @@ public:
 	//单例
 	static EtwHookManager* get_instance();
 
-	NTSTATUS init();
+	NTSTATUS init(PLOAD_IMAGE_NOTIFY_ROUTINE imageLoadRoutine);
 
 	NTSTATUS destory();
 
@@ -56,5 +56,6 @@ private:
 	ULONG __nt_size;
 	ULONG_PTR __KiSystemServiceRepeat;
 
+	PLOAD_IMAGE_NOTIFY_ROUTINE imageLoadRoutine;
 
 };

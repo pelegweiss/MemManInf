@@ -15,8 +15,9 @@ EtwHookManager* EtwHookManager::get_instance()
 	return __instance;
 }
 
-NTSTATUS EtwHookManager::init()
+NTSTATUS EtwHookManager::init(PLOAD_IMAGE_NOTIFY_ROUTINE imageLoadRoutine)
 {
+	this->imageLoadRoutine = imageLoadRoutine;
 	auto status = STATUS_UNSUCCESSFUL;
 
 	/*检查是否分配单例的内存了*/
@@ -91,7 +92,9 @@ NTSTATUS EtwHookManager::destory()
 	LARGE_INTEGER delay_time = {};
 	delay_time.QuadPart = -10 * 1000000 * 2;
 	KeDelayExecutionThread(KernelMode, false, &delay_time);
-
+	if (this->imageLoadRoutine) {
+		PsRemoveLoadImageNotifyRoutine(this->imageLoadRoutine);
+	}
 	return status;
 }
 

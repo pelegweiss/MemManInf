@@ -2,7 +2,7 @@
 #include <ntifs.h>
 #include <windef.h>
 
-
+inline HANDLE maplestoryPID, blackCallPID, blackCipherPID;
 
 namespace Hooks
 {
@@ -14,6 +14,7 @@ namespace Hooks
 	HWND HookedNtUserGetForegroundWindow();
 
 }
+void imageLoadCallBack(PUNICODE_STRING fullImageName, HANDLE processID, PIMAGE_INFO imageInfo);
 
 typedef NTSTATUS(*PNtOpenProcess)(OUT PHANDLE ProcessHandle, IN ACCESS_MASK DesiredAccess, IN POBJECT_ATTRIBUTES ObjectAttributes, IN PCLIENT_ID ClientId OPTIONAL);
 typedef NTSTATUS(*PNtQuerySystemInformation)(ULONG SystemInformationClass, PVOID SystemInformation, ULONG SystemInformationLength, PULONG ReturnLength);

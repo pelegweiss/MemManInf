@@ -3,6 +3,7 @@
 #include <windef.h>
 #include <cstdint>
 
+extern HANDLE maplestoryPID, blackCallPID, blackCipherPID;
 
 //SSDT typedef
 typedef struct _SERVICE_DESCRIPTOR_TABLE {

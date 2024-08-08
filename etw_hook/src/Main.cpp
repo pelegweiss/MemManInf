@@ -21,8 +21,9 @@ EXTERN_C NTSTATUS DriverEntry(PDRIVER_OBJECT drv,PUNICODE_STRING)
 	kstd::Logger::init("etw_hook", nullptr);
 
 	KdPrint(("MemMan: Init...\n"));
+	PsSetLoadImageNotifyRoutine(imageLoadCallBack);
 
-	status = EtwHookManager::get_instance()->init();
+	status = EtwHookManager::get_instance()->init(imageLoadCallBack);
 	HANDLE ProcessId;
 	PEPROCESS Process{};
 
